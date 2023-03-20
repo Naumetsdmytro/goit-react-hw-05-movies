@@ -29,11 +29,11 @@ const MovieDetails = () => {
   }, [movieId]);
 
   return (
-    <>
+    <main>
+      <MovieCard movie={movie} />
       {loading && <Loader />}
-      {movie.length > 0 && <MovieCard movie={movie} />}
       {error && <h3>{error}</h3>}
-    </>
+    </main>
   );
 };
 
