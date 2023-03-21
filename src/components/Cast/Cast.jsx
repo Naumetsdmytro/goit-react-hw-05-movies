@@ -1,39 +1,40 @@
-import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 
-import { fetchMoviedetails } from 'components/services/API';
-import { MovieCard } from 'components/MovieCard';
+import { fetchCast } from 'components/services/API';
 import { Loader } from 'components/Loader';
+import { CastList } from './CastList';
 
-const MovieDetails = () => {
-  const [movie, setMovie] = useState(null);
+const Cast = () => {
+  const [cast, setCast] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const { movieId } = useParams();
 
   useEffect(() => {
-    const fetchMovie = async () => {
+    const fetchCredits = async () => {
       setLoading(true);
       try {
-        const movieData = await fetchMoviedetails(movieId);
-        setMovie(movieData);
+        const credits = await fetchCast(movieId);
+        console.log(credits);
+        setCast(credits);
       } catch (error) {
         setError(error.message);
       } finally {
         setLoading(false);
       }
     };
-    fetchMovie();
+    fetchCredits();
   }, [movieId]);
 
   return (
-    <main>
-      {movie && <MovieCard movie={movie} />}
+    <div>
+      {cast.length > 0 && !loading && <CastList cast={cast} />}
       {loading && <Loader />}
       {error && <h3>{error}</h3>}
-    </main>
+    </div>
   );
 };
 
-export default MovieDetails;
+export default Cast;
