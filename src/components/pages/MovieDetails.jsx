@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { fetchMoviedetails } from 'components/services/API';
 import { MovieCard } from 'components/MovieCard';
 import { Loader } from 'components/Loader';
+import { Container } from 'components/Container';
 
 const MovieDetails = () => {
   const [movie, setMovie] = useState(null);
@@ -13,10 +14,11 @@ const MovieDetails = () => {
   const { movieId } = useParams();
 
   useEffect(() => {
+    const abortController = new AbortController();
     const fetchMovie = async () => {
       setLoading(true);
       try {
-        const movieData = await fetchMoviedetails(movieId);
+        const movieData = await fetchMoviedetails(movieId, abortController);
         setMovie(movieData);
       } catch (error) {
         setError(error.message);
@@ -25,14 +27,18 @@ const MovieDetails = () => {
       }
     };
     fetchMovie();
+
+    return () => {
+      abortController.abort();
+    };
   }, [movieId]);
 
   return (
-    <main>
+    <Container>
       {movie && <MovieCard movie={movie} />}
       {loading && <Loader />}
       {error && <h3>{error}</h3>}
-    </main>
+    </Container>
   );
 };
 

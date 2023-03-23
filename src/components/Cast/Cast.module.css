@@ -1,0 +1,17 @@
+.castListItem {
+  display: flex;
+}
+
+.castListItem:not(:last-child) {
+  margin-bottom: 20px;
+}
+
+.castImg {
+  border-radius: 7px;
+  margin-right: 15px;
+}
+
+.titleCast {
+  padding-top: 25px;
+  margin-bottom: 15px;
+}

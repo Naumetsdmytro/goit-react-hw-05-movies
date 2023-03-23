@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import Notiflix from 'notiflix';
 
-import { HomeList } from 'components/List';
+import { HomeList } from 'components/Lists';
 import { Loader } from 'components/Loader';
+import { Container } from 'components/Container';
 import { fetchPopularFilms } from '../services/API';
 
 const Home = () => {
@@ -14,10 +15,11 @@ const Home = () => {
   const location = useLocation();
 
   useEffect(() => {
+    const abortController = new AbortController();
     const fetchMovies = async () => {
       setLoading(true);
       try {
-        const popularFilms = await fetchPopularFilms();
+        const popularFilms = await fetchPopularFilms(abortController);
         if (popularFilms.length === 0) {
           Notiflix.Notify.failure(
             'Sorry something went wrong, try again later!'
@@ -31,14 +33,18 @@ const Home = () => {
       }
     };
     fetchMovies();
+
+    return () => {
+      abortController.abort();
+    };
   }, []);
   return (
-    <main>
+    <Container>
       <h2>Trending today</h2>
       {movies.length > 0 && <HomeList films={movies} location={location} />}
       {loading && <Loader />}
       {error && <h3>{error}</h3>}
-    </main>
+    </Container>
   );
 };
 

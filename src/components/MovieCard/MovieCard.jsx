@@ -1,7 +1,9 @@
-import { Link, useLocation, Outlet } from 'react-router-dom';
+import { NavLink, Link, useLocation, Outlet } from 'react-router-dom';
 import { Suspense } from 'react';
+import PropTypes from 'prop-types';
 
 import plug from '../../images/plug.jpg';
+import styles from './MovieCard.module.css';
 
 export const MovieCard = ({ movie }) => {
   const location = useLocation();
@@ -11,53 +13,79 @@ export const MovieCard = ({ movie }) => {
 
   const { img, genres, release, voteAverage } = {
     img: movie.poster_path,
-    genres: movie.genres.map(({ name }) => name).join(' '),
+    genres: movie.genres.map(({ name }) => name).join(', '),
     release: date.getUTCFullYear(movie.release_date),
     voteAverage: movie.vote_average.toFixed(1) * 10,
   };
 
   return (
-    <main>
+    <>
       <Link to={backLinkHref}>
-        <button type="button">Go back</button>
+        <button type="button" className={styles.cardButton}>
+          Go back
+        </button>
       </Link>
-      <h2>movie</h2>
-      {img ? (
-        <img
-          src={`https://image.tmdb.org/t/p/w500` + img}
-          alt={movie.title}
-          width={280}
-          height={360}
-        />
-      ) : (
-        <img src={plug} width={280} height={360} alt="plug" />
-      )}
-      <h2>
-        {movie.title} ({release})
-      </h2>
-      <p>User Score: {voteAverage}%</p>
-      <h3>Overview</h3>
-      <p>{movie.overview}</p>
-      <h3>Genres</h3>
-      <p>{genres}</p>
-      <div>
-        <h3>Aditional information</h3>
+      <div className={styles.container}>
+        {img ? (
+          <img
+            src={`https://image.tmdb.org/t/p/w500` + img}
+            alt={movie.title}
+            width={270}
+            height={350}
+            className={styles.movieImg}
+          />
+        ) : (
+          <img
+            src={plug}
+            width={280}
+            height={360}
+            alt="plug"
+            className={styles.movieImg}
+          />
+        )}
+        <div className={styles.informationContainer}>
+          <h2 className={styles.movieTitle}>
+            {movie.title} ({release})
+          </h2>
+          <p className={styles.movieText}>User Score: {voteAverage}%</p>
+          <h3 className={styles.movieTitle}>Overview</h3>
+          <p className={styles.movieText}>{movie.overview}</p>
+          <h3 className={styles.movieTitle}>Genres</h3>
+          <p className={styles.movieText}>{genres}</p>
+        </div>
+      </div>
+      <div className={styles.aditionInformContainer}>
+        <h3 className={styles.movieTitle}>Aditional information</h3>
         <ul>
-          <li>
-            <Link to="cast" state={{ from: location.state?.from ?? '/' }}>
+          <li className={styles.informLink}>
+            <NavLink to="cast" state={{ from: location.state?.from ?? '/' }}>
               Cast
-            </Link>
+            </NavLink>
           </li>
           <li>
-            <Link to="reviews" state={{ from: location.state?.from ?? '/' }}>
+            <NavLink to="reviews" state={{ from: location.state?.from ?? '/' }}>
               Reviews
-            </Link>
+            </NavLink>
           </li>
         </ul>
       </div>
       <Suspense fallback={<div>Loading...</div>}>
         <Outlet />
       </Suspense>
-    </main>
+    </>
   );
+};
+
+MovieCard.propTypes = {
+  movie: PropTypes.shape({
+    poster_path: PropTypes.string,
+    vote_average: PropTypes.number.isRequired,
+    release_date: PropTypes.string.isRequired,
+    overview: PropTypes.string.isRequired,
+    genres: PropTypes.arrayOf(
+      PropTypes.shape({
+        name: PropTypes.string.isRequired,
+      })
+    ).isRequired,
+  }),
 };

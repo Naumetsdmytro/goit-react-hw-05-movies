@@ -13,11 +13,11 @@ const Cast = () => {
   const { movieId } = useParams();
 
   useEffect(() => {
+    const abortController = new AbortController();
     const fetchCredits = async () => {
       setLoading(true);
       try {
-        const credits = await fetchCast(movieId);
-        console.log(credits);
+        const credits = await fetchCast(movieId, abortController);
         setCast(credits);
       } catch (error) {
         setError(error.message);
@@ -26,6 +26,10 @@ const Cast = () => {
       }
     };
     fetchCredits();
+
+    return () => {
+      abortController.abort();
+    };
   }, [movieId]);
 
   return (
