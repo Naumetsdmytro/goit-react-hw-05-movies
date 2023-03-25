@@ -34,7 +34,11 @@ const Cast = () => {
 
   return (
     <div>
-      {cast.length > 0 && !loading && <CastList cast={cast} />}
+      {cast.length > 0 ? (
+        <CastList cast={cast} />
+      ) : (
+        <p>We don't have any credits for this movie</p>
+      )}
       {loading && <Loader />}
       {error && <h3>{error}</h3>}
     </div>
